@@ -1,0 +1,13 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource>
+        <!--  Images -->
+        <file>images/logo.png</file>
+        <file>images/logo.svg</file>
+        <file>images/logo.ico</file>
+
+        <!--   the style files     -->
+        <file>qss/base.qss</file>
+        <file>qss/singletons.qss</file>
+    </qresource>
+</RCC>

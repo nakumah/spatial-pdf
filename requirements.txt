@@ -1,0 +1,6 @@
+PySide6
+pymupdf
+PyOpenGL
+PyOpenGL_accelerate
+qtawesome
+PySideSix-Frameless-Window
