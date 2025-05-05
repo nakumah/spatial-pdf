@@ -6,7 +6,7 @@ from core import SingletonApplication
 from core.config import APP_NAME, AUTHOR, VERSION
 
 # define the application resources
-from resources import resource  # type: ignore
+from resources import resource_rc  # type: ignore
 from views.main_window import MainWindow
 
 # define the environment settings

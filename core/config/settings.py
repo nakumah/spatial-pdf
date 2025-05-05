@@ -26,5 +26,5 @@ APP_PROJECT_DATA_FOLDER = os.path.join(str(CONFIG_FOLDER), "Bin")
 
 CONFIG_FILE = os.path.join(str(CONFIG_FOLDER), "config.xml")
 SETTINGS_FILE = os.path.join(str(CONFIG_FOLDER), "settings.xml")
-
+SAMPLE_PDF_FILE = os.path.join(str(CONFIG_FOLDER.parent), "resources", "corpus", "sample.pdf")
 

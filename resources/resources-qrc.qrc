@@ -6,9 +6,14 @@
         <file>images/logo.svg</file>
         <file>images/logo.ico</file>
         <file>images/banner.png</file>
+        <file>images/banner-short.png</file>
 
         <!--   the style files     -->
         <file>qss/base.qss</file>
         <file>qss/singletons.qss</file>
+        <file>qss/pages.qss</file>
+
+        <!--  corpus  -->
+        <file>corpus/sample.pdf</file>
     </qresource>
 </RCC>
