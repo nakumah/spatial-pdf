@@ -22,14 +22,11 @@ def readStyle(filename: str):
     @param filename:
     @return:
     """
-    try:
-        f = QFile(f":/qss/{filename}.qss")
-        f.open(QFile.OpenModeFlag.ReadOnly)
-        data = f.readAll().data().decode()
-        f.close()
-        return parseStyleSheet(data)
-    except OSError as e:
-        print("Reading file error", e)
+    f = QFile(f":/qss/{filename}.qss")
+    f.open(QFile.OpenModeFlag.ReadOnly)
+    data = f.readAll().data().decode()
+    f.close()
+    return parseStyleSheet(data)
 
 def parseStyleSheet(sheet: str):
     parsedValue = sheet

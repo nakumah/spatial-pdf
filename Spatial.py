@@ -18,7 +18,7 @@ ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(myAppID)
 
 def main():
     app = SingletonApplication(sys.argv)
-    spatialPDF = MainWindow()
+    spatialPDF = MainWindow(application=app)
     spatialPDF.initialize()
     spatialPDF.updateFrameless()
     sys.exit(app.exec())

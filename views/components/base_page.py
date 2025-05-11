@@ -1,11 +1,11 @@
 import uuid
 
-from PySide6.QtWidgets import QFrame
+from PySide6.QtWidgets import QWidget
 
 from core.utils import readStyles
 
 
-class BasePage(QFrame):
+class BasePage(QWidget):
     def __init__(self, parent=None, page_id: str = None):
         super().__init__(parent=parent)
 

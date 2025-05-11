@@ -15,5 +15,7 @@
 
         <!--  corpus  -->
         <file>corpus/sample.pdf</file>
+        <file>corpus/prime_db.sql</file>
+        <file>corpus/structure_db.sql</file>
     </qresource>
 </RCC>

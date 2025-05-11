@@ -1,10 +1,12 @@
 import traceback
+import argparse
 
 from typing import Any
 
 from PySide6.QtWidgets import QApplication
 
-from .utils import Logger
+from .command_hub import COMMAND_HUB
+from .utils import Logger, DATABASE_MANAGER
 from .signal_bus import signalBus
 
 class SingletonApplication(QApplication):
@@ -14,7 +16,51 @@ class SingletonApplication(QApplication):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
+        self.__startArgs = {
+            "file": None,
+            "verbose": False,
+        }
         self.setStyle("Fusion")
+
+        self.__processArgs()
+
+        # prepare the database
+        DATABASE_MANAGER.prime()
+        COMMAND_HUB.prime()
+
+    # region getters
+
+    def startArgs(self):
+        return self.__startArgs
+
+    # endregion
+
+    # region workers
+
+    def __processArgs(self):
+        parser = argparse.ArgumentParser(description="Arguments for Spatial PDF")
+
+        # Positional optional argument
+        parser.add_argument(
+            "input_file",
+            nargs="?",
+            help="Optional input file to process."
+        )
+
+        # Optional flag
+        parser.add_argument(
+            "--verbose",
+            action="store_true",
+            help="Run the application in verbose mode."
+        )
+
+        args = parser.parse_args()
+
+        # collect the arguments
+        self.__startArgs["file"] = args.input_file
+        self.__startArgs["verbose"] = args.verbose
+
+    # endregion
 
     # region event handler
     def __handleCreateLogEntry(self, data: Any):

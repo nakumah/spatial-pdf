@@ -1,22 +1,36 @@
-from PySide6 import QtWidgets, QtGui
+from PySide6 import QtWidgets, QtGui, QtCore
+from PySide6.QtWidgets import QToolButton
+
+from core.utils import appColors
+from core.structs import SYSTEM_ACTIONS
+import qtawesome
 
 
 class MenuToolBar(QtWidgets.QFrame):
+    triggered = QtCore.Signal(SYSTEM_ACTIONS)
+
     def __init__(self, parent=None):
-        super(MenuToolBar, self).__init__(parent=parent)
+        super().__init__(parent=parent)
+
+        quitAction = QtGui.QAction('Quit', self)
+        quitAction.setData(SYSTEM_ACTIONS.QUIT)
+
+        openAction = QtGui.QAction('Open', self)
+        openAction.setData(SYSTEM_ACTIONS.OPEN)
 
         self.fileMenu = QtWidgets.QMenu(self)
-        self.quitAction = QtGui.QAction('Quit', self)
-        self.fileMenu.addAction(self.quitAction)
+        self.fileMenu.addAction(openAction)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(quitAction)
 
-        self.homeAction = QtGui.QAction('Home', self)
-        self.fileAction = QtGui.QAction('File', self)
+        self.menuButton = QtWidgets.QToolButton(self)
+        self.menuButton.setStyleSheet("QToolButton::menu-indicator { image: none; }")
+        self.menuButton.setMenu(self.fileMenu)
+        self.menuButton.setIcon(qtawesome.icon("msc.menu", color=appColors.dark_rgb))
 
         self.toolbar = QtWidgets.QToolBar(self)
         self.toolbar.addSeparator()
-        self.toolbar.addAction(self.fileAction)
-        self.toolbar.addSeparator()
-        self.toolbar.addAction(self.homeAction)
+        self.toolbar.addWidget(self.menuButton)
         self.toolbar.addSeparator()
 
         layout = QtWidgets.QVBoxLayout()
@@ -24,4 +38,17 @@ class MenuToolBar(QtWidgets.QFrame):
         layout.addWidget(self.toolbar)
 
         self.setLayout(layout)
+        self.__configure()
+
+    def __configure(self):
+        self.toolbar.actionTriggered.connect(self.__handleToolbarTriggered)
+        self.menuButton.setPopupMode(QToolButton.ToolButtonPopupMode.InstantPopup)
+
+        self.fileMenu.triggered.connect(self.__handleFileMenuTriggered)
+
+    def __handleFileMenuTriggered(self, action: QtGui.QAction):
+        self.triggered.emit(action.data())
+
+    def __handleToolbarTriggered(self, action: QtGui.QAction):
+        self.triggered.emit(action.data())
 

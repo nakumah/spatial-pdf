@@ -4,3 +4,5 @@ class SYSTEM_ACTIONS(Enum):
     FILE = 0
     HOME = 1
     QUIT = 2
+    MENU = 3
+    OPEN = 4
