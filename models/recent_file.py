@@ -55,3 +55,6 @@ class FileModel:
         for image in PDFParser.extractMultiQImage(self.__opts["path"], "all"):
             pixmaps.append(QPixmap.fromImage(image))
         return pixmaps
+    
+    def pageCount(self) -> int:
+        return PDFParser.getPageCount(self.__opts["path"])

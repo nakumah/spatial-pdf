@@ -6,5 +6,7 @@ class SignalBus(QObject):
     TriggerAlertBanner = Signal(object)
     OpenFile = Signal()
     RecentChanged = Signal()
+    PageClicked = Signal(object)
+    PageDoubleClicked = Signal(object)
 
 signalBus = SignalBus()

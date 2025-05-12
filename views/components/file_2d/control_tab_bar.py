@@ -2,6 +2,7 @@ from PySide6 import (QtWidgets, QtCore, QtGui)
 import qtawesome
 from core.utils import appColors, parseStyleSheet
 from core.structs import FILE_PREVIEW_ACTIONS
+from models.recent_file import FileModel
 
 
 class Control2DTabBar(QtWidgets.QWidget):
@@ -162,32 +163,89 @@ class Control2DTabBar(QtWidgets.QWidget):
         if data == FILE_PREVIEW_ACTIONS.FILE_DOUBLE_PAGE:
             self.singlePageAction.setVisible(True)
             self.doublePageAction.setVisible(False)
+            self.triggered.emit((data, None))
         
-        if data == FILE_PREVIEW_ACTIONS.FILE_SINGLE_PAGE:
+        elif data == FILE_PREVIEW_ACTIONS.FILE_SINGLE_PAGE:
             self.singlePageAction.setVisible(False)
             self.doublePageAction.setVisible(True)
+            self.triggered.emit((data, None))
 
-        if data == FILE_PREVIEW_ACTIONS.FIT_TO_WIDTH:
+        elif data == FILE_PREVIEW_ACTIONS.FIT_TO_WIDTH:
             self.fitToWidthAction.setVisible(False)
             self.fitToWindowAction.setVisible(True)
+            self.triggered.emit((data, None))
         
-        if data == FILE_PREVIEW_ACTIONS.FIT_TO_WINDOW:
+        elif data == FILE_PREVIEW_ACTIONS.FIT_TO_WINDOW:
             self.fitToWidthAction.setVisible(True)
             self.fitToWindowAction.setVisible(False)
+            self.triggered.emit((data, None))
 
-        self.triggered.emit((data, None))
+        elif data == FILE_PREVIEW_ACTIONS.NEXT_PAGE:
+            # send the next page number to the parent.
+            try:
+                page = int(self.currentPage.text())
+            except:
+                return self.triggered.emit((data, -1))
+
+            # shift the page by one in the 1 based index
+            nextPage = page + 1
+
+            # if out of bounds, flag as invalid
+            if nextPage > int(self.totalPageCount.text()):
+                return self.triggered.emit((data, -1))
+            
+            # dispatch the page number to the parent in 0 based index
+            self.triggered.emit((data, nextPage - 1))
+
+        elif data == FILE_PREVIEW_ACTIONS.PREVIOUS_PAGE:
+            # send the previous page number to the parent.
+            try:
+                page = int(self.currentPage.text())
+            except:
+                return self.triggered.emit((data, -1))
+
+            # shift the page by one in the 1 based index
+            prevPage = page - 1
+
+            # if out of bounds, flag as invalid
+            if prevPage < 1:
+                return self.triggered.emit((data, -1))
+
+            # dispatch the page number to the parent in 0 based index
+            self.triggered.emit((data, prevPage - 1))
+        else:
+            # dispatch the action to the parent widget
+            self.triggered.emit((data, None))
 
     def __handlePageEditingFinished(self):
         """ Dispatch the page number to the parent widget """
-        self.triggered.emit((FILE_PREVIEW_ACTIONS.FILE_PAGE, self.currentPage.text()))
+        page = self.currentPage.text()
+        # force cast to int, if it fails, set to -1.
+        # also shift the page value to 0 based index
+
+
+        # if the conversion fails, flag as invalid
+        try:
+            page = int(page)
+        except:
+            self.triggered.emit((FILE_PREVIEW_ACTIONS.FILE_PAGE, -1))
+            return
+
+        # if page is larger than the count, flag as invalid
+        if page > int(self.totalPageCount.text()):
+            self.triggered.emit((FILE_PREVIEW_ACTIONS.FILE_PAGE, -1))
+            return
+        
+        # dispatch the page number to the parent in 0 based index
+        self.triggered.emit((FILE_PREVIEW_ACTIONS.FILE_PAGE, page - 1))
 
     # endregion
 
     # region getters
 
     def getCurrentPage(self) -> int:
-        """ Get the current page number """
-        return int(self.currentPage.text())
+        """ Get the current page number in 0 based index"""
+        return int(self.currentPage.text() - 1)
     
     def getTotalPageCount(self) -> int:
         """ Get the total page count """
@@ -198,9 +256,20 @@ class Control2DTabBar(QtWidgets.QWidget):
     # region setters
 
     def setCurrentPage(self, page: int):
-        """ Set the current page number """
-        self.currentPage.setText(str(page))
-    
+        """ Set the current page number: page is 0 based index """
+        self.currentPage.setText(str(page + 1))  # convert to 1 based index
+
+        # disable next and previous page buttons if page is 0 or last page
+        if page == 0:
+            self.previousPageAction.setEnabled(False)
+        else:
+            self.previousPageAction.setEnabled(True)
+
+        if page == int(self.totalPageCount.text()) - 1:
+            self.nextPageAction.setEnabled(False)
+        else:
+            self.nextPageAction.setEnabled(True)
+
     def setTotalPageCount(self, count: int):
         """ Set the total page count """
         self.totalPageCount.setText(str(count))
@@ -211,6 +280,11 @@ class Control2DTabBar(QtWidgets.QWidget):
         fm = QtGui.QFontMetrics(self.currentPage.font())
         w = fm.horizontalAdvance("0000" + "  ")
         self.currentPage.setFixedWidth(w)
+
+    def populate(self, model: FileModel):
+        """ Populate the control panel with the model data """
+        self.setTotalPageCount(model.pageCount())
+        self.setCurrentPage(0)
 
     # endregion
 

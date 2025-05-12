@@ -61,3 +61,10 @@ class PDFParser:
             return images
 
         raise TypeError(f"Expected target of types 'list[int] | str | int', got <{type(target)}>")
+    
+    @staticmethod
+    def getPageCount(path: str):
+        if not os.path.exists(path):
+            raise FileExistsError(f"PDF path <{path}> does not exist.")
+        doc = pymupdf.open(path)
+        return len(doc)
