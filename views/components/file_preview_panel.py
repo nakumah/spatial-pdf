@@ -100,6 +100,8 @@ class FilePreviewPanel(QtWidgets.QWidget):
         self.panelGallery.setOpts(
             {
                 "zoom": 0.25,
+                "zoomable": False,
+                "constraint": "zoom",  # fit, fill or zoom
                 "y_spacing": 40,
                 "draw_bounds": True,
                 "draw_mode": "single",  # single or double for double page view

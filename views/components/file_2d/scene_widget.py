@@ -47,6 +47,10 @@ class Scene2DWidget(QtWidgets.QWidget):
         self.__pageMap: dict[int, PageItemWidget] = {}
         self.__opts: dict = {
             "zoom": 1.0,
+            "zoomable": False,
+            "constraint": "fit",  # fit, fill or zoom
+            "bounds_width": self.graphicsView.width(),
+            "bounds_height": self.graphicsView.height(),
             "x_spacing": 0,
             "y_spacing": 20,
             "draw_bounds": False,
@@ -82,6 +86,9 @@ class Scene2DWidget(QtWidgets.QWidget):
                     "page": page,
                     "page_number": i,  # page is 0 based index
                     "zoom": self.__opts["zoom"],
+                    "constraint": self.__opts["constraint"],  # fit, fill or zoom
+                    "bounds_width": self.__opts["bounds_width"],
+                    "bounds_height": self.__opts["bounds_height"],
                     "x_offset": x_offset,
                     "y_offset": y_offset,
                     "draw_bounds": self.__opts["draw_bounds"],
@@ -146,6 +153,10 @@ class Scene2DWidget(QtWidgets.QWidget):
 
     # region workers
 
+    def reloadScene(self):
+        self.clearWidget()
+        
+
     def clearWidget(self):
         self.scene.clear()
         self.__pageMap.clear()
@@ -170,6 +181,17 @@ class Scene2DWidget(QtWidgets.QWidget):
 
         # center the view on the page
         self.graphicsView.centerOn(self.__pageMap[pageNumber])
+
+    # endregion
+
+    # region overrides
+
+    def resizeEvent(self, event: QtCore.QEvent):
+        super().resizeEvent(event)
+
+        # update the bounds of the scene
+        self.__opts["bounds_width"] = self.graphicsView.width()
+        self.__opts["bounds_height"] = self.graphicsView.height()
 
     # endregion
 

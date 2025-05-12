@@ -9,6 +9,8 @@ from views.components.file_2d.control_tab_bar import Control2DTabBar
 from views.components.file_preview_panel import FilePreviewPanel
 from core.structs import FILE_PREVIEW_ACTIONS
 
+import numpy as np
+
 class FileWidget(QtWidgets.QFrame):
     def __init__(self, parent: QtWidgets.QWidget = None, model: FileModel = None):
         super().__init__(parent=parent)
@@ -16,6 +18,8 @@ class FileWidget(QtWidgets.QFrame):
         self.__model: FileModel = model
         self.__buffer: dict[str, Any] = {
             "current_page": 0, # the current page number in the preview system.
+            "zoom_index": 15, # the current index of the zoom factor in the preview system.
+            "zoom_factors": np.linspace(0.1, 3.1, 30).tolist(), # zoom factors for the preview system
         }
 
         # define the sections
@@ -73,7 +77,7 @@ class FileWidget(QtWidgets.QFrame):
     # region handlers
     def __handle2DControlToolBarTriggered(self, data: tuple[FILE_PREVIEW_ACTIONS, Any]):
         key, value = data
-        
+
         if key == FILE_PREVIEW_ACTIONS.FILE_CONTENTS:
             self.__toggleLeftPanelVisibility()
 
@@ -84,16 +88,43 @@ class FileWidget(QtWidgets.QFrame):
             self.__jumpToPage(value)
         
         elif key == FILE_PREVIEW_ACTIONS.ZOOM_IN:
-            pass
+            zi = self.__buffer["zoom_index"]
+            if zi + 1 in range(len(self.__buffer["zoom_factors"])):
+                # preform a redraw with new zoom
+                self.centerPanel.clearWidget()
+                self.centerPanel.setOpts({"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi + 1]})
+                self.centerPanel.populate(self.__model)
+
+                # increment the zoom index
+                self.__buffer["zoom_index"] += 1
+            else:
+                # do nothing, already max zoom
+                pass
         
         elif key == FILE_PREVIEW_ACTIONS.ZOOM_OUT:
-            pass
+            zi = self.__buffer["zoom_index"]
+            if zi - 1 in range(len(self.__buffer["zoom_factors"])):
+                
+                # preform a redraw with new zoom
+                self.centerPanel.clearWidget()
+                self.centerPanel.setOpts({"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi - 1]})
+                self.centerPanel.populate(self.__model)
+
+                # decrement the zoom index
+                self.__buffer["zoom_index"] -= 1
+            else:
+                # do nothing, already min zoom
+                pass
         
         elif key == FILE_PREVIEW_ACTIONS.FIT_TO_WIDTH:
-            pass
+            self.centerPanel.clearWidget()
+            self.centerPanel.setOpts({"constraint": "fit", "zoomable": True})
+            self.centerPanel.populate(self.__model)
         
         elif key == FILE_PREVIEW_ACTIONS.FIT_TO_WINDOW:
-            pass
+            self.centerPanel.clearWidget()
+            self.centerPanel.setOpts({"constraint": "fill", "zoomable": True})
+            self.centerPanel.populate(self.__model)
         
         elif key == FILE_PREVIEW_ACTIONS.FILE_SINGLE_PAGE:
             pass
