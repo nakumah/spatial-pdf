@@ -5,3 +5,5 @@ PyOpenGL_accelerate
 qtawesome
 PySideSix-Frameless-Window
 humanize
+numpy
+pandas
