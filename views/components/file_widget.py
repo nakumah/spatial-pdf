@@ -1,12 +1,12 @@
-# overall widget containing the
-
+from typing import Any
 from PySide6 import QtWidgets, QtCore, QtGui
 
 from core.utils.pdf_parser import PDFParser
 from models.recent_file import FileModel
 from views.components.file_2d.scene_widget import Scene2DWidget
 from views.components.file_global_tab_bar import FileGlobalTabBar
-
+from views.components.file_2d.control_tab_bar import Control2DTabBar
+from core.structs import FILE_PREVIEW_ACTIONS
 
 class FileWidget(QtWidgets.QFrame):
     def __init__(self, parent: QtWidgets.QWidget = None, model: FileModel = None):
@@ -15,7 +15,7 @@ class FileWidget(QtWidgets.QFrame):
         self.__model: FileModel = model
 
         # define the sections
-        self.topPanel = QtWidgets.QWidget()
+        self.topPanel = Control2DTabBar()
         self.leftPanel = QtWidgets.QWidget()
         self.centerPanel = Scene2DWidget()
         self.rightPanel = QtWidgets.QWidget()
@@ -58,7 +58,21 @@ class FileWidget(QtWidgets.QFrame):
     # region configure
 
     def __configure(self):
-        pass
+        self.topPanel.triggered.connect(self.__handle2DControlToolBarTriggered)
+        self.bottomPanel.triggered.connect(self.__handleFileGlobalToolBarTriggered)
+
+    # endregion
+
+    # region handlers
+    def __handle2DControlToolBarTriggered(self, data: tuple[FILE_PREVIEW_ACTIONS, Any]):
+        print(f"Triggered: {data}")
+
+    def __handleFileGlobalToolBarTriggered(self, data: tuple[FILE_PREVIEW_ACTIONS, Any]):
+        print(f"Triggered: {data}")
+
+    # endregion
+
+    # region workers
 
     # endregion
 

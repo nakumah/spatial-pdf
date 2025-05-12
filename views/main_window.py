@@ -32,6 +32,7 @@ class MainWindow(FramelessMainWindow):
         self._titlebar.raise_()
 
         self.setStyleSheet(readStyles(["base", "singletons"]))
+        self.setGeometry(100, 100, 1280, 720)
 
         self.__configure()
 
