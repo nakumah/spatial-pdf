@@ -5,6 +5,7 @@ from PySide6 import QtWidgets, QtCore, QtGui
 from core.utils.pdf_parser import PDFParser
 from models.recent_file import FileModel
 from views.components.file_2d.scene_widget import Scene2DWidget
+from views.components.file_global_tab_bar import FileGlobalTabBar
 
 
 class FileWidget(QtWidgets.QFrame):
@@ -14,20 +15,24 @@ class FileWidget(QtWidgets.QFrame):
         self.__model: FileModel = model
 
         # define the sections
+        self.topPanel = QtWidgets.QWidget()
         self.leftPanel = QtWidgets.QWidget()
         self.centerPanel = Scene2DWidget()
         self.rightPanel = QtWidgets.QWidget()
+        self.bottomPanel = FileGlobalTabBar()
 
         layout = QtWidgets.QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
 
-        layout.addWidget(self.leftPanel, 0, 0)
-        layout.addWidget(self.centerPanel, 0, 1)
-        layout.addWidget(self.rightPanel, 0, 2)
+        layout.addWidget(self.topPanel, 0, 0, 1, 3)
+        layout.addWidget(self.leftPanel, 1, 0)
+        layout.addWidget(self.centerPanel, 1, 1)
+        layout.addWidget(self.rightPanel, 1, 2)
+        layout.addWidget(self.bottomPanel, 2, 0, 2, 3)
 
-        # assign max stretch to the center column
         layout.setColumnStretch(1, 1)
+        layout.setRowStretch(1, 1)
 
         # make this the current layout
         self.setLayout(layout)

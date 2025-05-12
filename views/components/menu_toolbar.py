@@ -15,11 +15,16 @@ class MenuToolBar(QtWidgets.QFrame):
         quitAction = QtGui.QAction('Quit', self)
         quitAction.setData(SYSTEM_ACTIONS.QUIT)
 
+        settingsAction = QtGui.QAction('Settings', self)
+        settingsAction.setData(SYSTEM_ACTIONS.USER_SETTINGS)
+
         openAction = QtGui.QAction('Open', self)
         openAction.setData(SYSTEM_ACTIONS.OPEN)
 
         self.fileMenu = QtWidgets.QMenu(self)
         self.fileMenu.addAction(openAction)
+        self.fileMenu.addSeparator()
+        self.fileMenu.addAction(settingsAction)
         self.fileMenu.addSeparator()
         self.fileMenu.addAction(quitAction)
 

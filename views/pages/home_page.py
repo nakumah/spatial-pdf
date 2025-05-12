@@ -94,7 +94,7 @@ class HomePage(BasePage):
         label = QLabel()
         label.setPixmap(model.preview().scaled(100, 100, Qt.AspectRatioMode.KeepAspectRatio,
                                                Qt.TransformationMode.SmoothTransformation))
-
+        label.setAlignment(Qt.AlignmentFlag.AlignCenter)
         tree.setItemWidget(item, 0, label)
 
     def __updateTree(self, model: FileModel, mode: Literal["insert", "append", "replace"] = "append", row=0):

@@ -9,6 +9,7 @@ from PySide6 import QtWidgets, QtGui
 from views.components.custom_tab_bar import CustomTabBar
 from views.components.file_widget import FileWidget
 from views.pages.home_page import HomePage
+from views.components.alert_banner import AlertBanner
 
 
 class CentralWidget(QtWidgets.QFrame):
@@ -17,6 +18,7 @@ class CentralWidget(QtWidgets.QFrame):
 
         self.__tabMap: list[tuple[str, FileWidget]] = []
 
+        self.alertBanner = AlertBanner(self)
         self.homePage = HomePage(parent=self)
 
         self.tabs = QtWidgets.QTabWidget()
@@ -29,7 +31,10 @@ class CentralWidget(QtWidgets.QFrame):
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 30, 0, 0)
 
+        layout.addWidget(self.alertBanner)
         layout.addWidget(self.tabs)
+
+        layout.setStretch(1, 1)  # stretch the tab widget to fill the remaining space
 
         self.setLayout(layout)
 
@@ -192,4 +197,5 @@ class CentralWidget(QtWidgets.QFrame):
     # region connect signals
     def __connectSignals(self):
         signalBus.OpenFile.connect(self.__handleOpenFile)
+        signalBus.TriggerAlertBanner.connect(self.alertBanner.erect)
     # endregion

@@ -27,7 +27,8 @@ class CommandHub:
         @return:
         """
         self.__fxn: dict[SYSTEM_ACTIONS, Callable[..., Any]] = {
-            SYSTEM_ACTIONS.OPEN: self.__openFile
+            SYSTEM_ACTIONS.OPEN: self.__openFile,
+            SYSTEM_ACTIONS.USER_SETTINGS: self.__settingsDialog,
         }
 
     # endregion
@@ -35,6 +36,9 @@ class CommandHub:
     # region tasks
     def __openFile(self, _=None):
         signalBus.OpenFile.emit()
+
+    def __settingsDialog(self, _=None):
+        signalBus.TriggerAlertBanner.emit("Settings dialog not implemented yet.")
     # endregion
 
     #region event handler
