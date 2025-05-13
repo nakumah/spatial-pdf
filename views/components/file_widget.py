@@ -171,7 +171,6 @@ class FileWidget(QtWidgets.QFrame):
         # resolve gracefully if invalid page number
         if pageNumber == -1:
             # reset the page number to the last recorded page number
-            print("Invalid page number ")
             pageNumber = self.__buffer["current_page"]
         else:
             # update the buffer

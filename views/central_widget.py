@@ -16,7 +16,7 @@ class CentralWidget(QtWidgets.QFrame):
     def __init__(self, parent=None):
         super().__init__(parent=parent)
 
-        self.__tabMap: list[tuple[str, FileWidget]] = []
+        self.__tabMap: dict[str, FileWidget] = {}
 
         self.alertBanner = AlertBanner(self)
         self.homePage = HomePage(parent=self)
@@ -24,8 +24,8 @@ class CentralWidget(QtWidgets.QFrame):
         self.tabs = QtWidgets.QTabWidget()
         self.customTabBar = CustomTabBar()
         self.tabs.setTabBar(self.customTabBar)
-        self.tabs.setMovable(False)  # forces tab creation position to be in lock step with the map
-        # only offset by the base home page tab
+
+        self.tabs.setMovable(False)  
         self.appendTab(self.homePage, 'Home', closable=False)
 
         layout = QtWidgets.QVBoxLayout()
@@ -72,17 +72,7 @@ class CentralWidget(QtWidgets.QFrame):
         return idx
 
     def tabExists(self, tabId: str) -> bool:
-        for key, _ in self.__tabMap:
-            if key == tabId:
-                return True
-        return False
-
-    def tabMapIndex(self, tabId: str) -> int | None:
-        for i, pair in enumerate(self.__tabMap):
-            k, _ = pair
-            if k == tabId:
-                return i + 1  # shift the index to account for the base tab
-        return None
+        return tabId in self.__tabMap.keys()
 
     def showTab(self, model: FileModel):
         """
@@ -104,8 +94,9 @@ class CentralWidget(QtWidgets.QFrame):
         """
         k = model.path()
         w = FileWidget(model=model)
-        self.__tabMap.append((k, w))
+        self.__tabMap[k] = w
         idx = self.appendTab(w, model.filename(), closable=True)
+        self.customTabBar.setTabData(idx, k)
         self.makeTabCurrent(idx)
 
     def makeTabCurrent(self, tabId: str | int):
@@ -117,10 +108,10 @@ class CentralWidget(QtWidgets.QFrame):
         if isinstance(tabId, int):
             self.tabs.setCurrentIndex(tabId)
         elif isinstance(tabId, str):
-            idx = self.tabMapIndex(tabId)
-            if idx is None:
-                raise KeyError(f'Tab {tabId} does not exist')
-            self.tabs.setCurrentIndex(idx)
+            w = self.__tabMap.get(tabId)
+            if w is None:
+                raise KeyError(f"Cannot set current tab with tabId: {tabId}")
+            self.tabs.setCurrentWidget(w)
         else:
             raise TypeError("expected str | int got {}".format(type(tabId)))
 
@@ -130,14 +121,24 @@ class CentralWidget(QtWidgets.QFrame):
         if index == 0:
             return
 
-        #  drop the index one step to account for the base tab
-        index -= 1
-        if index not in range(len(self.__tabMap)):
-            raise IndexError(f'Tab {index} does not exist')
+        # get the key from the map
+        key = self.customTabBar.tabData(index)
+        if key in self.__tabMap.keys():
+            widget = self.__tabMap.pop(key)
+            widget.deleteLater()
+        else:
+            # otherwise burte force clear the tabs.
+            for i in range(self.tabs.count()):
+                if i == 0: # ignore the base tab
+                    continue
+                self.tabs.removeTab(i)
 
-        _, v = self.__tabMap.pop(index)
-        v.deleteLater()
-
+        # update the indices based on the current count.
+        # if at the last item, clear the cache
+        if self.tabs.count() == 1:
+            for k in list(self.__tabMap.keys()):
+                v = self.__tabMap.pop(k)
+                v.deleteLater()
     # endregion
 
     # event handlers

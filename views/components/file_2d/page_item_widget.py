@@ -54,12 +54,13 @@ class PageItemWidget(QtWidgets.QGraphicsItemGroup):
         a = base_pix.height / base_pix.width
         b = self.__opts["bounds_width"] / base_pix.width
         g = self.__opts["bounds_height"] / base_pix.height
+        k = self.__opts["bounds_height"] / self.__opts["bounds_width"]
         zx, zy = 1.0, 1.0
 
         if self.__opts["constraint"] == "fill":
             zx, zy = b, a * b
         elif self.__opts["constraint"] == "fit":
-            zx, zy = min(a * g, g), min(a * g, g)
+            zx, zy = min(a * g / k, g), min(a * g / k, g)
         elif self.__opts["constraint"] == "zoom":
             zx, zy = self.__opts["zoom"], self.__opts["zoom"]
         else:
