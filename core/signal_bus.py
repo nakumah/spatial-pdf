@@ -8,5 +8,6 @@ class SignalBus(QObject):
     RecentChanged = Signal()
     PageClicked = Signal(object)
     PageDoubleClicked = Signal(object)
+    TriggerFrameless = Signal()
 
 signalBus = SignalBus()

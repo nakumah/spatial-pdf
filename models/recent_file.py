@@ -1,11 +1,13 @@
 import os
 import time
 from datetime import datetime
+from typing import Literal
+
 import humanize
 
 from core.config.settings import SAMPLE_PDF_FILE
 
-from PySide6.QtGui import QPixmap
+from PySide6.QtGui import QPixmap, QImage
 
 from core.utils.pdf_parser import PDFParser
 
@@ -50,11 +52,12 @@ class FileModel:
     def path(self) -> str:
         return self.__opts["path"]
 
-    def images(self) -> list[QPixmap]:
-        pixmaps = []
-        for image in PDFParser.extractMultiQImage(self.__opts["path"], "all"):
-            pixmaps.append(QPixmap.fromImage(image))
-        return pixmaps
-    
+    def images(self, fmt: Literal["qPixmap", "qImage"] = "qPixmap") -> list[QPixmap] | list[QImage]:
+        if fmt == "qImage":
+            return PDFParser.extractMultiQImage(self.__opts["path"], "all")
+
+        if fmt == "qPixmap":
+            return [QPixmap.fromImage(image) for image in PDFParser.extractMultiQImage(self.__opts["path"], "all")]
+
     def pageCount(self) -> int:
         return PDFParser.getPageCount(self.__opts["path"])

@@ -29,7 +29,7 @@ class CentralWidget(QtWidgets.QFrame):
         self.appendTab(self.homePage, 'Home', closable=False)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.setContentsMargins(0, 30, 0, 0)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(self.alertBanner)
         layout.addWidget(self.tabs)
@@ -169,7 +169,7 @@ class CentralWidget(QtWidgets.QFrame):
             raise error
 
         # trigger ui updates
-        signalBus.RecentChanged.emit()
+        self.__triggerUI()
 
     def __handleOpenFile(self):
         """
@@ -191,6 +191,10 @@ class CentralWidget(QtWidgets.QFrame):
         self.showTab(fileModel)
 
         # dispatch recent changes
+        self.__triggerUI()
+
+    @staticmethod
+    def __triggerUI():
         signalBus.RecentChanged.emit()
 
     # endregion

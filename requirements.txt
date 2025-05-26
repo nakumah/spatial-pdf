@@ -7,3 +7,4 @@ PySideSix-Frameless-Window
 humanize
 numpy
 pandas
+pyqtgraph

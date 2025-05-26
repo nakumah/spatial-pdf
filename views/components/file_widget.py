@@ -1,15 +1,17 @@
 from typing import Any
-from PySide6 import QtWidgets, QtCore, QtGui
-
-from core.utils.pdf_parser import PDFParser
-from models.recent_file import FileModel
-from views.components.file_2d.scene_widget import Scene2DWidget
-from views.components.file_global_tab_bar import FileGlobalTabBar
-from views.components.file_2d.control_tab_bar import Control2DTabBar
-from views.components.file_preview_panel import FilePreviewPanel
-from core.structs import FILE_PREVIEW_ACTIONS
 
 import numpy as np
+from PySide6 import QtWidgets
+
+from core import signalBus
+from core.structs import FILE_PREVIEW_ACTIONS
+from models.recent_file import FileModel
+from views.components.file_2d.control_tab_bar import Control2DTabBar
+from views.components.file_2d.scene_widget import Scene2DWidget
+from views.components.file_3d.scene_widget import Scene3DWidget
+from views.components.file_global_tab_bar import FileGlobalTabBar
+from views.components.file_preview_panel import FilePreviewPanel
+
 
 class FileWidget(QtWidgets.QFrame):
     def __init__(self, parent: QtWidgets.QWidget = None, model: FileModel = None):
@@ -17,17 +19,22 @@ class FileWidget(QtWidgets.QFrame):
 
         self.__model: FileModel = model
         self.__buffer: dict[str, Any] = {
-            "current_page": 0, # the current page number in the preview system.
-            "zoom_index": 15, # the current index of the zoom factor in the preview system.
-            "zoom_factors": np.linspace(0.1, 3.1, 30).tolist(), # zoom factors for the preview system
+            "current_page": 0,  # the current page number in the preview system.
+            "zoom_index": 15,  # the current index of the zoom factor in the preview system.
+            "zoom_factors": np.linspace(0.1, 3.1, 30).tolist(),  # zoom factors for the preview system
         }
 
         # define the sections
+        self.scene2dWidget = Scene2DWidget()
+        self.scene3dWidget = Scene3DWidget()
+
         self.topPanel = Control2DTabBar()
         self.leftPanel = FilePreviewPanel()
-        self.centerPanel = Scene2DWidget()
         self.rightPanel = QtWidgets.QWidget()
         self.bottomPanel = FileGlobalTabBar()
+        self.centerPanel = QtWidgets.QStackedWidget()
+        self.centerPanel.addWidget(self.scene2dWidget)
+        self.centerPanel.addWidget(self.scene3dWidget)
 
         layout = QtWidgets.QGridLayout()
         layout.setContentsMargins(0, 0, 0, 0)
@@ -53,9 +60,11 @@ class FileWidget(QtWidgets.QFrame):
 
     def __prime(self):
         self.leftPanel.prime()
+        self.centerPanel.setCurrentIndex(1)
 
     def __populate(self):
-        self.centerPanel.populate(self.__model)
+        self.scene2dWidget.populate(self.__model)
+        self.scene3dWidget.populate(self.__model)
         self.leftPanel.populate(self.__model)
         self.topPanel.populate(self.__model)
 
@@ -86,76 +95,82 @@ class FileWidget(QtWidgets.QFrame):
 
         elif key == FILE_PREVIEW_ACTIONS.FILE_PAGE:
             self.__jumpToPage(value)
-        
+
         elif key == FILE_PREVIEW_ACTIONS.ZOOM_IN:
             zi = self.__buffer["zoom_index"]
             if zi + 1 in range(len(self.__buffer["zoom_factors"])):
                 # preform a redraw with new zoom
-                self.centerPanel.clearWidget()
-                self.centerPanel.setOpts({"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi + 1]})
-                self.centerPanel.populate(self.__model)
+                self.scene2dWidget.clearWidget()
+                self.scene2dWidget.setOpts(
+                    {"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi + 1]})
+                self.scene2dWidget.populate(self.__model)
 
                 # increment the zoom index
                 self.__buffer["zoom_index"] += 1
             else:
                 # do nothing, already max zoom
                 pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.ZOOM_OUT:
             zi = self.__buffer["zoom_index"]
             if zi - 1 in range(len(self.__buffer["zoom_factors"])):
-                
+
                 # preform a redraw with new zoom
-                self.centerPanel.clearWidget()
-                self.centerPanel.setOpts({"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi - 1]})
-                self.centerPanel.populate(self.__model)
+                self.scene2dWidget.clearWidget()
+                self.scene2dWidget.setOpts(
+                    {"constraint": "zoom", "zoomable": True, "zoom": self.__buffer["zoom_factors"][zi - 1]})
+                self.scene2dWidget.populate(self.__model)
 
                 # decrement the zoom index
                 self.__buffer["zoom_index"] -= 1
             else:
                 # do nothing, already min zoom
                 pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.FIT_TO_WIDTH:
-            self.centerPanel.clearWidget()
-            self.centerPanel.setOpts({"constraint": "fit", "zoomable": True})
-            self.centerPanel.populate(self.__model)
-        
+            self.scene2dWidget.clearWidget()
+            self.scene2dWidget.setOpts({"constraint": "fit", "zoomable": True})
+            self.scene2dWidget.populate(self.__model)
+
         elif key == FILE_PREVIEW_ACTIONS.FIT_TO_WINDOW:
-            self.centerPanel.clearWidget()
-            self.centerPanel.setOpts({"constraint": "fill", "zoomable": True})
-            self.centerPanel.populate(self.__model)
-        
+            self.scene2dWidget.clearWidget()
+            self.scene2dWidget.setOpts({"constraint": "fill", "zoomable": True})
+            self.scene2dWidget.populate(self.__model)
+
         elif key == FILE_PREVIEW_ACTIONS.FILE_SINGLE_PAGE:
             pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.FILE_DOUBLE_PAGE:
             pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.FILE_PRINT:
             pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.FILE_SAVE:
             pass
-        
+
         elif key == FILE_PREVIEW_ACTIONS.NEXT_PAGE:
             # the new page value comes in 0 based index
             # the increment has already been done.
             # so we jump to the new page number or -1 if invalid
             self.__jumpToPage(value)
-        
+
         elif key == FILE_PREVIEW_ACTIONS.PREVIOUS_PAGE:
             # the new page value comes in 0 based index
             # the decrement has already been done.
             # so we jump to the new page number or -1 if invalid
             self.__jumpToPage(value)
-        
 
         print(f"Triggered: {data}")
 
     def __handleFileGlobalToolBarTriggered(self, data: tuple[FILE_PREVIEW_ACTIONS, Any]):
+        key, value = data
+        if key == FILE_PREVIEW_ACTIONS.SHOW_2D:
+            self.centerPanel.setCurrentIndex(0)
+        if key == FILE_PREVIEW_ACTIONS.SHOW_3D:
+            self.centerPanel.setCurrentIndex(1)
 
-        print(f"Triggered: {data}")
+        print(f"Global options Triggered: {data}")
 
     # endregion
 
@@ -178,16 +193,16 @@ class FileWidget(QtWidgets.QFrame):
 
         self.leftPanel.setCurrentPage(pageNumber)
         self.topPanel.setCurrentPage(pageNumber)
-        self.centerPanel.setCurrentPage(pageNumber)
+        self.scene2dWidget.setCurrentPage(pageNumber)
 
     def __toggleLeftPanelVisibility(self):
         state = self.leftPanel.isHidden()
         if state:
             self.leftPanel.show()
         else:
-            self.leftPanel.hide()  
+            self.leftPanel.hide()
 
-    # endregion
+            # endregion
 
     # region connectSignals
 
