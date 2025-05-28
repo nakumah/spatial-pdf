@@ -8,6 +8,7 @@ from pyqtgraph.examples.ExampleApp import QColor
 
 from core.utils import appColors
 from models.recent_file import FileModel
+from views.components.file_3d.base_gl_view_widget import VBaseGLViewWidget
 from views.components.file_3d.pdf_3d_page import Page3D
 
 
@@ -21,7 +22,7 @@ class Scene3DWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
-        self.scene = gl.GLViewWidget()
+        self.scene = VBaseGLViewWidget()
 
         layout = QtWidgets.QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -111,28 +112,27 @@ class Scene3DWidget(QtWidgets.QWidget):
         for i in range(len(pages)):
             row = i // columns
             col = i % columns
-            a_spacing = spacing[0] * spacing[1] * (col + row) * (1 / (i + 1))
-            a_bounds = (x + length) * (y + width)
-            a_page_fit = (1 /( i + 1)) * (a_bounds - a_spacing)
+            a_spacing = spacing[0] * spacing[1] * (col + row) * (1 / len(pages))
+            a_bounds = abs(x + length) * abs(y + width)
+            a_page_fit = (1 / len(pages)) * (a_bounds - a_spacing)
 
             _, _, w, h = pages[i].geometry()
             a_source = w * h
             k = a_source / a_page_fit
             ar = h / w
 
+            _x = col * ((h / k) + (spacing[0] * (1 / len(pages)))) + x
+            _y = row * ((w / k) + (spacing[1] * (1 / len(pages)))) + y
+
             # scale & translate
-            pages[i].opts("item").scale( w / k, ar * w / k, 0, False)
-            pages[i].opts("item").translate(
-                col * (ar * w / k + spacing[0] * (1 / (i + 1))),
-                row * (w / k + spacing[1] * (1 / (i + 1))),
-                0.1 * i
-            )
+            pages[i].opts("item").scale(h / k, w / k, 0, False)
+            pages[i].opts("item").translate(_x, _y, 0)
 
     def __placePages(self, fmt: Literal["grid", "cylinder"]):
         if fmt == "grid":
             # place pages in grid formation
             self.__placeInGridFormation(self.__opts["pages"], self.__opts["spacing"], 5)
-            self.__constraintToGridBounds(self.__opts["pages"], 0, 0, 1, 1, 5, self.__opts["spacing"])
+            self.__constraintToGridBounds(self.__opts["pages"], -10, -10, 20, 20, 5, self.__opts["spacing"])
         elif fmt == "cylinder":
             pass
         else:
