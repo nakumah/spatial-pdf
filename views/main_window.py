@@ -10,27 +10,27 @@ from views.components.menu_toolbar import MenuToolBar
 from models.system_command_model import SystemCommandModel
 
 
-class MainWindow(QtWidgets.QMainWindow):
+class MainWindow(FramelessMainWindow):
     def __init__(self, parent=None, application: SingletonApplication = None):
         super().__init__(parent=parent)
 
         self.__application = application
 
-        # self._menuToolbar = MenuToolBar(self)
-        # self._titlebar = StandardTitleBar(self)
-        # self._titlebar.hBoxLayout.insertWidget(3, self._menuToolbar, 1, QtCore.Qt.AlignmentFlag.AlignVCenter)
-        # self._titlebar.hBoxLayout.insertStretch(4, 1)
-        # self._titlebar.hBoxLayout.insertWidget(5, QtWidgets.QLabel("Spatial PDF Viewer"), 1,
-        #                                        QtCore.Qt.AlignmentFlag.AlignVCenter)
-        # self.setTitleBar(self._titlebar)
+        self._menuToolbar = MenuToolBar(self)
+        self._titlebar = StandardTitleBar(self)
+        self._titlebar.hBoxLayout.insertWidget(3, self._menuToolbar, 1, QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self._titlebar.hBoxLayout.insertStretch(4, 1)
+        self._titlebar.hBoxLayout.insertWidget(5, QtWidgets.QLabel("Spatial PDF Viewer"), 1,
+                                               QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.setTitleBar(self._titlebar)
 
         self.setWindowIcon(QtGui.QPixmap(":/images/logo.ico"))
-        self.setWindowTitle("SpatialPDF")
+        # self.setWindowTitle("SpatialPDF")
 
         self._centralWidget = CentralWidget(self)
         self.setCentralWidget(self._centralWidget)
 
-        # self._titlebar.raise_()
+        self._titlebar.raise_()
 
         self.setStyleSheet(readStyles(["base", "singletons"]))
         self.setGeometry(100, 100, 1280, 720)
@@ -50,8 +50,7 @@ class MainWindow(QtWidgets.QMainWindow):
     # region configure
 
     def __configure(self):
-        # self._menuToolbar.triggered.connect(self.__handleMenuTriggered)
-        pass
+        self._menuToolbar.triggered.connect(self.__handleMenuTriggered)
 
     # endregion
 

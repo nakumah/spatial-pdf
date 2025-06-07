@@ -194,6 +194,7 @@ class FileWidget(QtWidgets.QFrame):
         self.leftPanel.setCurrentPage(pageNumber)
         self.topPanel.setCurrentPage(pageNumber)
         self.scene2dWidget.setCurrentPage(pageNumber)
+        self.scene3dWidget.setCurrentPage(pageNumber)
 
     def __toggleLeftPanelVisibility(self):
         state = self.leftPanel.isHidden()

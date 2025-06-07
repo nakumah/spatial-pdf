@@ -15,21 +15,15 @@ class CommandHub:
     def __init__(self):
         super().__init__()
 
-        self.__fxn: dict[SYSTEM_ACTIONS, Callable[..., Any]] = {}
-
-        self.__connectSignals()
-
-    #region initialize
-
-    def prime(self):
-        """
-        initialize the command hub
-        @return:
-        """
         self.__fxn: dict[SYSTEM_ACTIONS, Callable[..., Any]] = {
             SYSTEM_ACTIONS.OPEN: self.__openFile,
             SYSTEM_ACTIONS.USER_SETTINGS: self.__settingsDialog,
         }
+
+
+        self.__connectSignals()
+
+    #region initialize
 
     # endregion
     

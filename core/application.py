@@ -20,13 +20,12 @@ class SingletonApplication(QApplication):
             "file": None,
             "verbose": False,
         }
-        self.setStyle("Fusion")
+        # self.setStyle("Fusion")
 
         self.__processArgs()
 
         # prepare the database
         DATABASE_MANAGER.prime()
-        COMMAND_HUB.prime()
 
     # region getters
 
