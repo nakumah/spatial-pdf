@@ -52,11 +52,11 @@ class Scene3DWidget(QtWidgets.QWidget):
 
     def __initialize(self):
         self.scene.setBackgroundColor(self.__opts["world_color"])
-        self.scene.addItem(self.__opts["grid"])
-        self.scene.addItem(self.__opts["axis"])
-        self.scene.addItem(self.__opts["x_axis_label"])
-        self.scene.addItem(self.__opts["y_axis_label"])
-        self.scene.addItem(self.__opts["z_axis_label"])
+        # self.scene.addItem(self.__opts["grid"])
+        # self.scene.addItem(self.__opts["axis"])
+        # self.scene.addItem(self.__opts["x_axis_label"])
+        # self.scene.addItem(self.__opts["y_axis_label"])
+        # self.scene.addItem(self.__opts["z_axis_label"])
 
     # endregion
 
@@ -71,12 +71,12 @@ class Scene3DWidget(QtWidgets.QWidget):
     def reset(self):
         self.scene.clear()
 
-        self.scene.addItem(self.__opts["grid"])
-        self.scene.addItem(self.__opts["axis"])
-
-        self.scene.addItem(self.__opts["x_axis_label"])
-        self.scene.addItem(self.__opts["y_axis_label"])
-        self.scene.addItem(self.__opts["z_axis_label"])
+        # self.scene.addItem(self.__opts["grid"])
+        # self.scene.addItem(self.__opts["axis"])
+        #
+        # self.scene.addItem(self.__opts["x_axis_label"])
+        # self.scene.addItem(self.__opts["y_axis_label"])
+        # self.scene.addItem(self.__opts["z_axis_label"])
 
         self.__opts["pages"] = []
 
@@ -107,10 +107,10 @@ class Scene3DWidget(QtWidgets.QWidget):
             pages[i].opts("item").translate(x, y, 0.0)
 
     @staticmethod
-    def __placeInVerticalGridFormation(pages: list[Page3D], spacing: np.ndarray, columns: int):
+    def __placeInVerticalGridFormation(pages: list[Page3D], spacing: np.ndarray, cols: int):
         for i in range(len(pages)):
-            row = i // columns
-            col = i % columns
+            row = i % cols
+            col = i // cols
 
             w, h = pages[i].size()
             y = col * (h + spacing[1])
@@ -145,7 +145,7 @@ class Scene3DWidget(QtWidgets.QWidget):
     def __placePages(self, fmt: Literal["grid", "cylinder"]):
         if fmt == "grid":
             # place pages in grid formation
-            self.__placeInVerticalGridFormation(self.__opts["pages"], self.__opts["spacing"], 5)
+            self.__placeInVerticalGridFormation(self.__opts["pages"], self.__opts["spacing"], 10)
         elif fmt == "cylinder":
             pass
         else:

@@ -6,6 +6,7 @@ from PySide6 import QtWidgets
 from core import signalBus
 from core.structs import FILE_PREVIEW_ACTIONS
 from models.recent_file import FileModel
+from models.system_thread import SystemThread
 from views.components.file_2d.control_tab_bar import Control2DTabBar
 from views.components.file_2d.scene_widget import Scene2DWidget
 from views.components.file_3d.scene_widget import Scene3DWidget
@@ -62,15 +63,22 @@ class FileWidget(QtWidgets.QFrame):
         self.leftPanel.prime()
         self.centerPanel.setCurrentIndex(1)
 
-    def __populate(self):
-        self.scene2dWidget.populate(self.__model)
-        self.scene3dWidget.populate(self.__model)
-        self.leftPanel.populate(self.__model)
-        self.topPanel.populate(self.__model)
+    def populate(self):
+        def task(model):
+            self.scene2dWidget.populate(model)
+            self.scene3dWidget.populate(model)
+            self.leftPanel.populate(model)
+            self.topPanel.populate(model)
+
+        # thread=SystemThread({
+        #     "task": task, "task_params": self.__model,
+        #     "id": f"populate_{self.__model.filename()}",
+        # })
+        # signalBus.onLaunchThread.emit(thread)
+        task(self.__model)
 
     def __initialize(self):
         self.__prime()
-        self.__populate()
 
     # endregion
 

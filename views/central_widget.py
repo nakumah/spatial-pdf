@@ -19,6 +19,13 @@ class CentralWidget(QtWidgets.QFrame):
         self.__tabMap: dict[str, FileWidget] = {}
 
         self.alertBanner = AlertBanner(self)
+
+        self.progressBar = QtWidgets.QProgressBar(self)
+        self.progressBar.setRange(0, 0)
+        self.progressBar.setFixedHeight(5)
+        self.progressBar.setObjectName("VProgressBar")
+        self.progressBar.hide()
+
         self.homePage = HomePage(parent=self)
 
         self.tabs = QtWidgets.QTabWidget()
@@ -31,6 +38,7 @@ class CentralWidget(QtWidgets.QFrame):
         layout = QtWidgets.QVBoxLayout()
         layout.setContentsMargins(0, 32, 0, 0)
 
+        layout.addWidget(self.progressBar)
         layout.addWidget(self.alertBanner)
         layout.addWidget(self.tabs)
 
@@ -98,6 +106,7 @@ class CentralWidget(QtWidgets.QFrame):
         idx = self.appendTab(w, model.filename(), closable=True)
         self.customTabBar.setTabData(idx, k)
         self.makeTabCurrent(idx)
+        w.populate()
 
     def makeTabCurrent(self, tabId: str | int):
         """
@@ -203,4 +212,5 @@ class CentralWidget(QtWidgets.QFrame):
     def __connectSignals(self):
         signalBus.OpenFile.connect(self.__handleOpenFile)
         signalBus.TriggerAlertBanner.connect(self.alertBanner.erect)
+        signalBus.ShowProgress.connect(lambda state: self.progressBar.show() if state else self.progressBar.hide())
     # endregion

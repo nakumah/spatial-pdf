@@ -1,3 +1,11 @@
-QLabel{
-    color: dark_rgb;
+QProgressBar#VProgressBar {
+    border-width: 1px 0px 0px 0px;
+    border-color: light_shade_rbg;
+    border-style: solid;
+    padding: 0px;
+    background: white;
+}
+
+QProgressBar#VProgressBar::chunk {
+    background-color: secondary_rbg;
 }

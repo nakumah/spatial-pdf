@@ -8,6 +8,8 @@ from PySide6.QtWidgets import QApplication
 from .command_hub import COMMAND_HUB
 from .utils import Logger, DATABASE_MANAGER
 from .signal_bus import signalBus
+from .utils.thread_manager import THREAD_MANAGER
+
 
 class SingletonApplication(QApplication):
 
@@ -20,12 +22,13 @@ class SingletonApplication(QApplication):
             "file": None,
             "verbose": False,
         }
-        # self.setStyle("Fusion")
+        self.setStyle("Fusion")
 
         self.__processArgs()
 
         # prepare the database
         DATABASE_MANAGER.prime()
+        THREAD_MANAGER.prime()
 
     # region getters
 

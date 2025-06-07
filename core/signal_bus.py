@@ -10,4 +10,8 @@ class SignalBus(QObject):
     PageDoubleClicked = Signal(object)
     TriggerFrameless = Signal()
 
+    ShowProgress = Signal(bool)
+
+    onLaunchThread = Signal(object)
+
 signalBus = SignalBus()
