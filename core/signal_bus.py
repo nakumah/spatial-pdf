@@ -13,5 +13,8 @@ class SignalBus(QObject):
     ShowProgress = Signal(bool)
 
     onLaunchThread = Signal(object)
+    onKillThread = Signal(str)
+
+    onGestureRegistered = Signal(object)
 
 signalBus = SignalBus()

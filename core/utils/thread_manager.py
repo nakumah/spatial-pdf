@@ -12,6 +12,18 @@ class ThreadManager:
     def prime(self):
         pass
 
+    def killThread(self, pid: str):
+        thread = self.__store.pop(pid, None)
+        if thread is None:
+            return
+
+        # if the thread is running, terminate
+        if thread.isRunning():
+            thread.terminate()
+
+        # release the thread
+        thread.deleteLater()
+
     def launchThread(self, thread: SystemThread):
         if not thread.override() and self.isThreadActive(thread.pid()):
             return  print(f"Thread with id <{thread.pid()}> already running")
@@ -58,6 +70,7 @@ class ThreadManager:
 
     def connectSignals(self):
         signalBus.onLaunchThread.connect(self.launchThread)
+        signalBus.onKillThread.connect(self.killThread)
 
 
 THREAD_MANAGER = ThreadManager()

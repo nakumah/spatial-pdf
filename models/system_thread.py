@@ -65,17 +65,12 @@ class SystemThread(QtCore.QThread):
     def __handleTaskFailed(self, error: Exception | None):
         # if a handler was provided
         if self.__opts["on_error"]:
-            errorHandler: Callable[..., Any] = self.__opts["on_error"]
-            if self.__opts["on_error_params"]:
-                errorHandler(error)
-            else:
-                errorHandler()
+            self.__opts["on_error"](error)
             self.__opts["error"] = error
         else:
             self.__opts["error"] = error
 
         self.__opts["has_error"] = True
-
 
     def error(self):
         return self.__opts["error"]

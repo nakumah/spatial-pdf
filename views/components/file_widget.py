@@ -1,10 +1,15 @@
+from traceback import print_exception
 from typing import Any
 
+import cv2
 import numpy as np
 from PySide6 import QtWidgets
 
+from core import signalBus
 from core.structs import FILE_PREVIEW_ACTIONS
+from core.structs.system import GESTURE_ACTIONS
 from models.recent_file import FileModel
+from models.system_thread import SystemThread
 from views.components.file_2d.control_tab_bar import Control2DTabBar
 from views.components.file_2d.scene_widget import Scene2DWidget
 from views.components.file_3d.scene_widget import Scene3DWidget
@@ -21,6 +26,7 @@ class FileWidget(QtWidgets.QFrame):
             "current_page": 0,  # the current page number in the preview system.
             "zoom_index": 15,  # the current index of the zoom factor in the preview system.
             "zoom_factors": np.linspace(0.1, 3.1, 30).tolist(),  # zoom factors for the preview system
+            "gesture_controls": True,
         }
 
         # define the sections
@@ -169,8 +175,6 @@ class FileWidget(QtWidgets.QFrame):
         elif key == FILE_PREVIEW_ACTIONS.CONFIG_PANEL:
             self.scene3dWidget.toggleConfigPanel()
 
-        print(f"Triggered: {data}")
-
     def __handleFileGlobalToolBarTriggered(self, data: tuple[FILE_PREVIEW_ACTIONS, Any]):
         key, value = data
         if key == FILE_PREVIEW_ACTIONS.SHOW_2D:
@@ -179,12 +183,69 @@ class FileWidget(QtWidgets.QFrame):
         if key == FILE_PREVIEW_ACTIONS.SHOW_3D:
             self.centerPanel.setCurrentIndex(1)
             self.topPanel.config3dPanel.setVisible(True)
-
-        print(f"Global options Triggered: {data}")
+        if key == FILE_PREVIEW_ACTIONS.GESTURE_CONTROLS:
+            self.__buffer["gesture_controls"] =  value
+            if value: # turn on gesture controls for this tab
+                thread = SystemThread({
+                    "task": self.__gestureCapture,
+                    "task_params": self.__buffer["gesture_controls"],
+                    "on_success": self.__gestureControlClosed,
+                    "on_error": self.__gestureControlFailed,
+                    "id": f"gesture_{self.__model.filename()}"
+                })
+                signalBus.onLaunchThread.emit(thread)
+            else:
+                # set the flag as false.
+                # this will cause the capture function to stop.
+                self.__buffer["gesture_controls"] = False
 
     # endregion
 
     # region workers
+
+    def __processGestures(self, gesture: GESTURE_ACTIONS):
+        print(gesture)
+
+    def __gestureCapture(self, isListening: bool):
+        # isListening flag is controlled externally.
+        print(1)
+        cap = cv2.VideoCapture(0)
+        print(2)
+        if not cap.isOpened():
+            raise Exception("Cannot Open Camera.")
+
+        print(3)
+        while isListening:
+            print(4)
+            ret, frame = cap.read()
+
+            print(5)
+            if not ret:
+                print(6)
+                raise Exception("Cannot read frame.")
+
+            print(7)
+            gesture = GESTURE_ACTIONS.ZOOM_IN
+            signalBus.onGestureRegistered.emit(gesture)
+            print(8)
+        print(9)
+
+        return cap.release()
+
+    def __gestureControlClosed(self):
+        """gesture controls was closed successfully"""
+        print("gesture controls was closed.")
+        signalBus.TriggerAlertBanner.emit({"mode": "success", "text": "gesture controls was closed."})
+
+    def __gestureControlFailed(self, error: Exception | str):
+        """gesture controls crashed."""
+        if isinstance(error, Exception):
+            print_exception(error)
+        else:
+            print(error)
+        self.bottomPanel.resetGestureControls()
+        signalBus.TriggerAlertBanner.emit({"mode": "error", "text": str(error)})
+
     def __jumpToPage(self, pageNumber: int):
         """
         Jump to the specified page number in the file preview panel
@@ -218,7 +279,7 @@ class FileWidget(QtWidgets.QFrame):
     # region connectSignals
 
     def __connectSignals(self):
-        pass
+        signalBus.onGestureRegistered.connect(self.__processGestures)
 
     # endregion
 

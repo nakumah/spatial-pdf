@@ -17,11 +17,6 @@ class HomePage(BasePage):
 
         self.__modelBuffer: dict[str, FileModel] = {}
 
-        # self.banner = QFrame(self)
-        # self.banner.setFixedHeight(300)
-        # self.banner.setObjectName("Banner")
-        # recentLabel = QLabel("Recent")
-
         self.recentTree = QTreeWidget()
         self.recentTree.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.recentTree.setObjectName("RecentTree")
@@ -29,11 +24,8 @@ class HomePage(BasePage):
 
         layout = QGridLayout()
         layout.setContentsMargins(0, 30, 0, 0)
-        # layout.addWidget(self.banner, 0, 0)
-        # layout.addWidget(recentLabel, 1, 0)
         layout.addWidget(self.recentTree, 0, 0, 1, 2)
 
-        # layout.setRowStretch(2, 1)
 
         self.setLayout(layout)
 

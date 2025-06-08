@@ -8,3 +8,5 @@ humanize
 numpy
 pandas
 pyqtgraph
+opencv-python
+mediapipe

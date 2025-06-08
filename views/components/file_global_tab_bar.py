@@ -74,3 +74,8 @@ class FileGlobalTabBar(QtWidgets.QWidget):
                 self.gestureControlsAction.setIcon(qtawesome.icon("msc.move", color=appColors.medium_rgb))
             
             self.triggered.emit((action.data(), state))
+
+    def resetGestureControls(self):
+        self.gestureControlsAction.setChecked(False)
+        self.gestureControlsAction.setText("Gesture Controls: OFF")
+        self.gestureControlsAction.setIcon(qtawesome.icon("msc.move", color=appColors.medium_rgb))
