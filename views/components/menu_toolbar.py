@@ -6,6 +6,27 @@ from core.structs import SYSTEM_ACTIONS
 import qtawesome
 
 
+class MenuBar(QtWidgets.QMenuBar):
+    def __init__(self, parent=None):
+        super().__init__()
+
+        quitAction = QtGui.QAction('Quit', self)
+        quitAction.setData(SYSTEM_ACTIONS.QUIT)
+
+        settingsAction = QtGui.QAction('Settings', self)
+        settingsAction.setData(SYSTEM_ACTIONS.USER_SETTINGS)
+
+        openAction = QtGui.QAction('Open', self)
+        openAction.setData(SYSTEM_ACTIONS.OPEN)
+
+        self.addAction(openAction)
+        self.addSeparator()
+        self.addAction(settingsAction)
+        self.addSeparator()
+        self.addAction(quitAction)
+
+        self.setObjectName("MenuBar")
+
 class MenuToolBar(QtWidgets.QFrame):
     triggered = QtCore.Signal(SYSTEM_ACTIONS)
 

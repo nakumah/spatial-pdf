@@ -17,21 +17,23 @@ class HomePage(BasePage):
 
         self.__modelBuffer: dict[str, FileModel] = {}
 
-        self.banner = QFrame(self)
-        self.banner.setObjectName("Banner")
-        recentLabel = QLabel("Recent")
+        # self.banner = QFrame(self)
+        # self.banner.setFixedHeight(300)
+        # self.banner.setObjectName("Banner")
+        # recentLabel = QLabel("Recent")
 
         self.recentTree = QTreeWidget()
         self.recentTree.setSelectionMode(QAbstractItemView.SelectionMode.SingleSelection)
         self.recentTree.setObjectName("RecentTree")
+        self.recentTree.header().hide()
 
         layout = QGridLayout()
-        layout.setContentsMargins(10, 30, 10, 10)
-        layout.addWidget(self.banner, 0, 0)
-        layout.addWidget(recentLabel, 1, 0)
-        layout.addWidget(self.recentTree, 2, 0, 1, 2)
+        layout.setContentsMargins(0, 30, 0, 0)
+        # layout.addWidget(self.banner, 0, 0)
+        # layout.addWidget(recentLabel, 1, 0)
+        layout.addWidget(self.recentTree, 0, 0, 1, 2)
 
-        layout.setRowStretch(2, 1)
+        # layout.setRowStretch(2, 1)
 
         self.setLayout(layout)
 
@@ -78,8 +80,6 @@ class HomePage(BasePage):
     # region override
     def resizeEvent(self, event):
         super().resizeEvent(event)
-
-        self.banner.resize(event.size().width(), int(0.1 * event.size().height()))
 
     # endregion
 

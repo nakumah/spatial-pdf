@@ -7,3 +7,7 @@ QFrame#Banner{
 QFrame#CentralWidget{
     background-color: dark_tint_rgb;
 }
+
+QMenuBar#MenuBar{
+    background-color: dark_tint_rgb;
+}

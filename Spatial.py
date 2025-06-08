@@ -20,7 +20,6 @@ def main():
     app = SingletonApplication.instance() or SingletonApplication(sys.argv)
     spatialPDF = MainWindow(application=app)
     spatialPDF.initialize()
-    spatialPDF.updateFrameless()
     sys.exit(app.exec())
 
 # invoke the application

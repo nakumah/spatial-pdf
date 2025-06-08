@@ -37,7 +37,7 @@ class CentralWidget(QtWidgets.QFrame):
         self.appendTab(self.homePage, 'Home', closable=False)
 
         layout = QtWidgets.QVBoxLayout()
-        layout.setContentsMargins(0, 32, 0, 0)
+        layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(self.progressBar)
         layout.addWidget(self.alertBanner)
