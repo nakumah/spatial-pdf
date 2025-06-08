@@ -16,81 +16,81 @@ class Control2DTabBar(QtWidgets.QWidget):
         # define the actions
         self.contentsAction = QtGui.QAction(self)
         self.contentsAction.setIcon(
-            qtawesome.icon("msc.list-tree", color=appColors.dark_rgb)
+            qtawesome.icon("msc.list-tree", color=appColors.light_rgb)
         )
         self.contentsAction.setData(FILE_PREVIEW_ACTIONS.FILE_CONTENTS)
         self.contentsAction.setToolTip("Contents")
 
         self.zoomInAction = QtGui.QAction(self)
-        self.zoomInAction.setIcon(qtawesome.icon("msc.add", color=appColors.dark_rgb))
+        self.zoomInAction.setIcon(qtawesome.icon("msc.add", color=appColors.light_rgb))
         self.zoomInAction.setData(FILE_PREVIEW_ACTIONS.ZOOM_IN)
         self.zoomInAction.setToolTip("Zoom In")
 
         self.zoomOutAction = QtGui.QAction(self)
         self.zoomOutAction.setIcon(
-            qtawesome.icon("msc.remove", color=appColors.dark_rgb)
+            qtawesome.icon("msc.remove", color=appColors.light_rgb)
         )
         self.zoomOutAction.setData(FILE_PREVIEW_ACTIONS.ZOOM_OUT)
         self.zoomOutAction.setToolTip("Zoom Out")
 
         self.fitToWindowAction = QtGui.QAction(self)
         self.fitToWindowAction.setIcon(
-            qtawesome.icon("msc.screen-full", color=appColors.dark_rgb)
+            qtawesome.icon("msc.screen-full", color=appColors.light_rgb)
         )
         self.fitToWindowAction.setData(FILE_PREVIEW_ACTIONS.FIT_TO_WINDOW)
         self.fitToWindowAction.setToolTip("Fit to Window")
 
         self.fitToWidthAction = QtGui.QAction(self)
         self.fitToWidthAction.setIcon(
-            qtawesome.icon("msc.screen-normal", color=appColors.dark_rgb)
+            qtawesome.icon("msc.screen-normal", color=appColors.light_rgb)
         )
         self.fitToWidthAction.setData(FILE_PREVIEW_ACTIONS.FIT_TO_WIDTH)
         self.fitToWidthAction.setToolTip("Fit to Width")
 
         self.singlePageAction = QtGui.QAction(self)
         self.singlePageAction.setIcon(
-            qtawesome.icon("msc.output", color=appColors.dark_rgb)
+            qtawesome.icon("msc.output", color=appColors.light_rgb)
         )
         self.singlePageAction.setData(FILE_PREVIEW_ACTIONS.FILE_SINGLE_PAGE)
         self.singlePageAction.setToolTip("Single Page")
 
         self.doublePageAction = QtGui.QAction(self)
         self.doublePageAction.setIcon(
-            qtawesome.icon("msc.book", color=appColors.dark_rgb)
+            qtawesome.icon("msc.book", color=appColors.light_rgb)
         )
         self.doublePageAction.setData(FILE_PREVIEW_ACTIONS.FILE_DOUBLE_PAGE)
         self.doublePageAction.setToolTip("Double Page")
 
         self.saveAction = QtGui.QAction(self)
-        self.saveAction.setIcon(qtawesome.icon("msc.save", color=appColors.dark_rgb))
+        self.saveAction.setIcon(qtawesome.icon("msc.save", color=appColors.light_rgb))
         self.saveAction.setData(FILE_PREVIEW_ACTIONS.FILE_SAVE)
         self.saveAction.setToolTip("Save")
 
         self.saveAsAction = QtGui.QAction(self)
         self.saveAsAction.setIcon(
-            qtawesome.icon("msc.save-as", color=appColors.dark_rgb)
+            qtawesome.icon("msc.save-as", color=appColors.light_rgb)
         )
         self.saveAsAction.setData(FILE_PREVIEW_ACTIONS.FILE_SAVE_AS)
         self.saveAsAction.setToolTip("Save As")
 
         self.nextPageAction = QtGui.QAction(self)
-        self.nextPageAction.setIcon(qtawesome.icon("msc.chevron-right", color=appColors.dark_rgb))
+        self.nextPageAction.setIcon(qtawesome.icon("msc.chevron-right", color=appColors.light_rgb))
         self.nextPageAction.setData(FILE_PREVIEW_ACTIONS.NEXT_PAGE)
         self.nextPageAction.setToolTip("Next Page")
 
         self.previousPageAction = QtGui.QAction(self)
-        self.previousPageAction.setIcon(qtawesome.icon("msc.chevron-left", color=appColors.dark_rgb))
+        self.previousPageAction.setIcon(qtawesome.icon("msc.chevron-left", color=appColors.light_rgb))
         self.previousPageAction.setData(FILE_PREVIEW_ACTIONS.PREVIOUS_PAGE)
         self.previousPageAction.setToolTip("Previous Page")
 
-        # self.printAction = QtGui.QAction(self)
-        # self.printAction.setIcon(qtawesome.icon("msc.print", color=appColors.dark_rgb))
-        # self.printAction.setData(FILE_PREVIEW_ACTIONS.FILE_PRINT)
-        # self.printAction.setToolTip("Print")
+        self.config3dPanel = QtGui.QAction(self)
+        self.config3dPanel.setIcon(qtawesome.icon("msc.settings", color=appColors.light_rgb))
+        self.config3dPanel.setData(FILE_PREVIEW_ACTIONS.CONFIG_PANEL)
+        self.config3dPanel.setToolTip("Options")
 
         self.totalPageCount = QtWidgets.QLabel("0")
         self.currentPage = QtWidgets.QLineEdit("0")
-        self.currentPage.setAlignment(QtCore.Qt.AlignCenter)
+        self.currentPage.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
 
         self.leftToolBar = QtWidgets.QToolBar(self)
         self.rightToolBar = QtWidgets.QToolBar(self)
@@ -111,24 +111,24 @@ class Control2DTabBar(QtWidgets.QWidget):
         self.middleToolBar.addWidget(self.currentPage)
         self.middleToolBar.addWidget(QtWidgets.QLabel(" of "))
         self.middleToolBar.addWidget(self.totalPageCount)
-        self.middleToolBar.addSeparator()
-        self.middleToolBar.addAction(self.singlePageAction)
-        self.middleToolBar.addAction(self.doublePageAction)
+        # self.middleToolBar.addSeparator()
+        # self.middleToolBar.addAction(self.singlePageAction)
+        # self.middleToolBar.addAction(self.doublePageAction)
 
         # populate the right toolbar
-        self.rightToolBar.addAction(self.saveAction)
-        self.rightToolBar.addAction(self.saveAsAction)
+        # self.rightToolBar.addAction(self.saveAction)
+        # self.rightToolBar.addAction(self.saveAsAction)
         # self.rightToolBar.addSeparator()
-        # self.rightToolBar.addAction(self.printAction)
+        self.rightToolBar.addAction(self.config3dPanel)
 
         layout = QtWidgets.QHBoxLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
-        layout.addWidget(self.leftToolBar, 1, QtCore.Qt.AlignLeft)
+        layout.addWidget(self.leftToolBar, 1, QtCore.Qt.AlignmentFlag.AlignLeft)
         layout.addStretch()
-        layout.addWidget(self.middleToolBar, 1, QtCore.Qt.AlignCenter)
+        layout.addWidget(self.middleToolBar, 1, QtCore.Qt.AlignmentFlag.AlignCenter)
         layout.addStretch()
-        layout.addWidget(self.rightToolBar,1, QtCore.Qt.AlignRight)
+        layout.addWidget(self.rightToolBar,1, QtCore.Qt.AlignmentFlag.AlignRight)
 
         self.setLayout(layout)
 

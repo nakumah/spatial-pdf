@@ -19,6 +19,7 @@ class CentralWidget(QtWidgets.QFrame):
         self.__tabMap: dict[str, FileWidget] = {}
 
         self.alertBanner = AlertBanner(self)
+        self.alertBanner.setFixedHeight(35)
 
         self.progressBar = QtWidgets.QProgressBar(self)
         self.progressBar.setRange(0, 0)
@@ -43,6 +44,8 @@ class CentralWidget(QtWidgets.QFrame):
         layout.addWidget(self.tabs)
 
         layout.setStretch(1, 1)  # stretch the tab widget to fill the remaining space
+
+        self.setObjectName("CentralWidget")
 
         self.setLayout(layout)
 

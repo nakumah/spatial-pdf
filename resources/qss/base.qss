@@ -3,3 +3,7 @@ QFrame#Banner{
     background-repeat: no-repeat;
     background-position: center;
 }
+
+QFrame#CentralWidget{
+    background-color: dark_tint_rgb;
+}

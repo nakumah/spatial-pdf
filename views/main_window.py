@@ -31,6 +31,7 @@ class MainWindow(FramelessMainWindow):
         self.setCentralWidget(self._centralWidget)
 
         self._titlebar.raise_()
+        self.setObjectName("MainWindow")
 
         self.setStyleSheet(readStyles(["base", "singletons"]))
         self.setGeometry(100, 100, 1280, 720)

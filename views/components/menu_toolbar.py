@@ -31,7 +31,7 @@ class MenuToolBar(QtWidgets.QFrame):
         self.menuButton = QtWidgets.QToolButton(self)
         self.menuButton.setStyleSheet("QToolButton::menu-indicator { image: none; }")
         self.menuButton.setMenu(self.fileMenu)
-        self.menuButton.setIcon(qtawesome.icon("msc.menu", color=appColors.dark_rgb))
+        self.menuButton.setIcon(qtawesome.icon("msc.menu", color=appColors.light_rgb))
 
         self.toolbar = QtWidgets.QToolBar(self)
         self.toolbar.addSeparator()

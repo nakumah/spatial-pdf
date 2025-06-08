@@ -22,7 +22,7 @@ class Page3D:
             "pixmap": None,  # pymupdf.Pixmap
             "size": (0, 0,),
             "back_page": None,  # gl.GLMeshItem
-            "has_back_page": False,
+            "has_back_page": True,
             "back_page_color": QColor(appColors.white_rgb).getRgb(),
             "page_number_item": None,
             "page_number_item_badge": None,

@@ -7,6 +7,7 @@ import pyqtgraph.opengl as gl
 from pyqtgraph import Vector
 from pyqtgraph.examples.ExampleApp import QColor
 
+from core import signalBus
 from core.utils import appColors
 from models.recent_file import FileModel
 from views.components.file_3d.base_gl_view_widget import VBaseGLViewWidget
@@ -23,17 +24,44 @@ class Scene3DWidget(QtWidgets.QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        # define the configuration panel options
+        self.drawPageNumberCheckbox = QtWidgets.QCheckBox("Page Number")
+        self.drawBackPageCheckbox = QtWidgets.QCheckBox("Back Pages")
+
+        self.displayOptionsComboBox = QtWidgets.QComboBox()
+        self.displayOptionsComboBox.addItem("Grid", "grid")
+        self.displayOptionsComboBox.addItem("Stack", "stack")
+
+        self.gridRowsInput = QtWidgets.QLineEdit("5")
+        self.gridRowsInput.setPlaceholderText("Grid Rows")
+        self.gridColumnsInput = QtWidgets.QLineEdit("10")
+        self.gridColumnsInput.setPlaceholderText("Grid Columns")
+
         self.scene = VBaseGLViewWidget()
+
+        configPanelLayout = QtWidgets.QGridLayout()
+
+        configPanelLayout.addWidget(self.drawPageNumberCheckbox, 1, 0)
+        configPanelLayout.addWidget(self.drawBackPageCheckbox, 1, 1)
+        configPanelLayout.addWidget(self.displayOptionsComboBox, 2, 0, 1, 2)
+        configPanelLayout.addWidget(self.gridRowsInput, 3, 0)
+        configPanelLayout.addWidget(self.gridColumnsInput, 3, 1)
+        configPanelLayout.addWidget(QtWidgets.QWidget(), 4, 0)
+        configPanelLayout.setRowStretch(4, 1)
+
+        self.configPanel = QtWidgets.QWidget()
+        self.configPanel.setLayout(configPanelLayout)
 
         layout = QtWidgets.QGridLayout(self)
         layout.setContentsMargins(0, 0, 0, 0)
 
         layout.addWidget(self.scene, 0, 0)
+        layout.addWidget(self.configPanel, 0, 1)
+        layout.setColumnStretch(0, 1)
 
         self.setLayout(layout)
 
         self.__opts: dict = {
-            "grid": gl.GLGridItem(color=appColors.medium_rgb),
             "axis": gl.GLAxisItem(),
             "x_axis_label": gl.GLTextItem(pos=np.array((1.0, 0.0, 0.0)), color=QColor(appColors.tertiary_rgb),
                                           text="X"),
@@ -43,6 +71,10 @@ class Scene3DWidget(QtWidgets.QWidget):
             "world_color": appColors.light_rgb,
             "pages": [],  # Page3D,
             "spacing": np.array([1.0, 1.0, 1.0]) * 25,
+            "grid": (5, 10),
+            "view": "grid",  # grid, stack
+            "draw_page_number": False,
+            "draw_back_page": False,
         }
 
         self.__initialize()
@@ -52,26 +84,42 @@ class Scene3DWidget(QtWidgets.QWidget):
 
     def __initialize(self):
         self.scene.setBackgroundColor(self.__opts["world_color"])
-        # self.scene.addItem(self.__opts["grid"])
         # self.scene.addItem(self.__opts["axis"])
         # self.scene.addItem(self.__opts["x_axis_label"])
         # self.scene.addItem(self.__opts["y_axis_label"])
         # self.scene.addItem(self.__opts["z_axis_label"])
+
+        self.gridRowsInput.setText(str(self.__opts["grid"][0]))
+        self.gridColumnsInput.setText(str(self.__opts["grid"][1]))
+
+        self.drawPageNumberCheckbox.setChecked(self.__opts["draw_page_number"])
+        self.drawBackPageCheckbox.setChecked(self.__opts["draw_back_page"])
+
+        self.displayOptionsComboBox.setCurrentIndex(0)
 
     # endregion
 
     # region configure
 
     def __configure(self):
-        pass
+        self.drawBackPageCheckbox.stateChanged.connect(self.__handleDrawPageNumber)
+        self.drawBackPageCheckbox.stateChanged.connect(self.__handleDrawBackPage)
+        self.gridColumnsInput.editingFinished.connect(self.__handleGridInputChanged)
+        self.gridRowsInput.editingFinished.connect(self.__handleGridInputChanged)
+        self.displayOptionsComboBox.currentIndexChanged.connect(self.__handleDisplayMode)
 
     # endregion
 
     # region workers
+    def toggleConfigPanel(self):
+        if self.configPanel.isHidden():
+            self.configPanel.show()
+        else:
+            self.configPanel.hide()
+
     def reset(self):
         self.scene.clear()
 
-        # self.scene.addItem(self.__opts["grid"])
         # self.scene.addItem(self.__opts["axis"])
         #
         # self.scene.addItem(self.__opts["x_axis_label"])
@@ -88,6 +136,8 @@ class Scene3DWidget(QtWidgets.QWidget):
                 "page_index": i,
                 "pos": np.array([0, 0, 0]),
                 "image": image,
+                "has_back_page": self.__opts["draw_back_page"],
+                "has_page_number": self.__opts["draw_page_number"]
             })
             pages.append(page)
 
@@ -183,7 +233,7 @@ class Scene3DWidget(QtWidgets.QWidget):
             raise ValueError(f"Invalid page_number: {page_number}, Expected an integer or str = 'all'")
 
     @staticmethod
-    def __computeCameraGeometry(top_left: np.ndarray, bottom_right: np.ndarray, distancePadding: float=1.5) -> dict:
+    def __computeCameraGeometry(top_left: np.ndarray, bottom_right: np.ndarray, distancePadding: float = 1.5) -> dict:
         center = (top_left + bottom_right) / 2
         size = np.abs(bottom_right - top_left)
         max_dim = np.max(size)
@@ -206,9 +256,45 @@ class Scene3DWidget(QtWidgets.QWidget):
         # adjust camera
         self.__center("all")
 
+    def __redrawScene(self):
+        signalBus.TriggerAlertBanner.emit({"text": "Scene Redraw not implemented. Man was lazy", "mode": "warning"})
+
     # endregion
 
     # region event handlers
+    def __handleDrawPageNumber(self):
+        self.__opts["draw_page_number"] = self.drawPageNumberCheckbox.isChecked()
+        self.__redrawScene()
+
+    def __handleDrawBackPage(self):
+        self.__opts["draw_back_page"] = self.drawBackPageCheckbox.isChecked()
+        self.__redrawScene()
+
+    def __handleGridInputChanged(self):
+        try:
+            row = int(self.gridRowsInput.text())
+            col = int(self.gridColumnsInput.text())
+        except Exception:
+            self.gridRowsInput.setText(str(self.__opts["grid"][0]))
+            self.gridColumnsInput.setText(str(self.__opts["grid"][1]))
+            return signalBus.TriggerAlertBanner.emit({"mode": "error", "text": "Values must be numbers"})
+
+        self.__opts["grid"] = row, col
+
+        self.__redrawScene()
+
+    def __handleDisplayMode(self, index: int):
+        self.__opts["view"] = self.displayOptionsComboBox.currentData()
+
+        if self.__opts["view"] == "grid":
+            self.gridRowsInput.show()
+            self.gridColumnsInput.show()
+        else:
+            self.gridRowsInput.hide()
+            self.gridColumnsInput.hide()
+
+        self.__redrawScene()
+
 
     # endregion
 

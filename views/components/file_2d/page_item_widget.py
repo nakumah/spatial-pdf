@@ -55,7 +55,6 @@ class PageItemWidget(QtWidgets.QGraphicsItemGroup):
         b = self.__opts["bounds_width"] / base_pix.width
         g = self.__opts["bounds_height"] / base_pix.height
         k = self.__opts["bounds_height"] / self.__opts["bounds_width"]
-        zx, zy = 1.0, 1.0
 
         if self.__opts["constraint"] == "fill":
             zx, zy = b, a * b
@@ -116,7 +115,7 @@ class PageItemWidget(QtWidgets.QGraphicsItemGroup):
             raise ValueError("Page number must be specified")
 
         text_item = QtWidgets.QGraphicsTextItem(str(page_number + 1))
-        text_item.setDefaultTextColor(QtGui.QColor(appColors.dark_rgb))
+        text_item.setDefaultTextColor(QtGui.QColor(appColors.light_rgb))
         text_item.setPos(
             self.__opts["width"] * 0.5, self.__opts["height"] + self.__opts["y_offset"]
         )

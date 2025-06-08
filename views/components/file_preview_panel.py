@@ -26,7 +26,7 @@ class FilePreviewPanel(QtWidgets.QWidget):
         self.closePanelButton = QtWidgets.QPushButton()
         self.closePanelButton.setFlat(True)
         self.closePanelButton.setIcon(
-            qtawesome.icon("msc.close", color=appColors.dark_rgb)
+            qtawesome.icon("msc.close", color=appColors.light_rgb)
         )
         self.closePanelButton.setToolTip("Close Panel")
 
@@ -52,14 +52,14 @@ class FilePreviewPanel(QtWidgets.QWidget):
 
         listAction = QtGui.QAction(self)
         listAction.setIcon(
-            qtawesome.icon("msc.list-unordered", color=appColors.dark_rgb)
+            qtawesome.icon("msc.list-unordered", color=appColors.light_rgb)
         )
         listAction.setToolTip("List View")
         listAction.setData(FILE_PREVIEW_ACTIONS.LIST_VIEW)
 
         thumbAction = QtGui.QAction(self)
         thumbAction.setIcon(
-            qtawesome.icon("msc.device-camera", color=appColors.dark_rgb)
+            qtawesome.icon("msc.device-camera", color=appColors.light_rgb)
         )
         thumbAction.setToolTip("Thumbnail View")
         thumbAction.setData(FILE_PREVIEW_ACTIONS.THUMBNAIL_VIEW)
@@ -164,7 +164,7 @@ class FilePreviewPanel(QtWidgets.QWidget):
         self.panelTree.clear()
 
         # prime the gallery widget
-        pass
+        self.panelStackWidget.setCurrentWidget(self.panelGallery)
 
     def __populateTreeWidget(self, model: FileModel):
         doc: pymupdf.Document = pymupdf.open(model.path())

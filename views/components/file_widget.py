@@ -3,10 +3,8 @@ from typing import Any
 import numpy as np
 from PySide6 import QtWidgets
 
-from core import signalBus
 from core.structs import FILE_PREVIEW_ACTIONS
 from models.recent_file import FileModel
-from models.system_thread import SystemThread
 from views.components.file_2d.control_tab_bar import Control2DTabBar
 from views.components.file_2d.scene_widget import Scene2DWidget
 from views.components.file_3d.scene_widget import Scene3DWidget
@@ -61,7 +59,7 @@ class FileWidget(QtWidgets.QFrame):
 
     def __prime(self):
         self.leftPanel.prime()
-        self.centerPanel.setCurrentIndex(1)
+        self.__handleFileGlobalToolBarTriggered((FILE_PREVIEW_ACTIONS.SHOW_2D, None))
 
     def populate(self):
         def task(model):
@@ -168,6 +166,8 @@ class FileWidget(QtWidgets.QFrame):
             # the decrement has already been done.
             # so we jump to the new page number or -1 if invalid
             self.__jumpToPage(value)
+        elif key == FILE_PREVIEW_ACTIONS.CONFIG_PANEL:
+            self.scene3dWidget.toggleConfigPanel()
 
         print(f"Triggered: {data}")
 
@@ -175,8 +175,10 @@ class FileWidget(QtWidgets.QFrame):
         key, value = data
         if key == FILE_PREVIEW_ACTIONS.SHOW_2D:
             self.centerPanel.setCurrentIndex(0)
+            self.topPanel.config3dPanel.setVisible(False)
         if key == FILE_PREVIEW_ACTIONS.SHOW_3D:
             self.centerPanel.setCurrentIndex(1)
+            self.topPanel.config3dPanel.setVisible(True)
 
         print(f"Global options Triggered: {data}")
 
